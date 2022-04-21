@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { SUPPORTED_TOKENS } from "./constants";
 import useEthereum from "./useEthereum";
@@ -8,9 +8,16 @@ function App() {
   const [currentToken, setCurrentToken] = useState("CRO");
 
   const handleSelectToken = (e: any) => {
-    getBalance(wallet, e.target?.value);
     setCurrentToken(e.target.value);
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getBalance(wallet, currentToken);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [getBalance, currentToken, wallet]);
+
   return (
     <div className="App">
       {!wallet && <button onClick={connectWallet}>Connect wallet</button>}

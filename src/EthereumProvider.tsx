@@ -53,12 +53,6 @@ const EthereumProvider = ({ children }: { children: ReactNode }) => {
     setEthereumEnabled(true);
   }, []);
 
-  useEffect(() => {
-    if (wallet) {
-      getBalance(wallet, "CRO");
-    }
-  }, [wallet]);
-
   const value = {
     wallet,
     balance,
