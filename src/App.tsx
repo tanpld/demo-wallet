@@ -1,4 +1,14 @@
 import { useEffect, useState } from "react";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Typography from "@mui/material/Typography";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import CardHeader from "@mui/material/CardHeader";
+import Divider from "@mui/material/Divider";
+
 import "./App.css";
 import { SUPPORTED_TOKENS } from "./constants";
 import useEthereum from "./useEthereum";
@@ -14,7 +24,7 @@ function App() {
   } = useEthereum();
   const [currentToken, setCurrentToken] = useState("CRO");
 
-  const handleSelectToken = (e: any) => {
+  const handleSelectToken = (e: SelectChangeEvent) => {
     setCurrentToken(e.target.value);
     getBalance(wallet, e.target.value);
   };
@@ -30,31 +40,45 @@ function App() {
 
   return (
     <div className="App">
-      {!wallet && !isConnectingWallet && (
-        <button onClick={connectWallet}>Connect wallet</button>
-      )}
-      {wallet && !isConnectingWallet && (
-        <select
-          name="tokens"
-          id="tokens"
-          onChange={handleSelectToken}
-          // disabled={isGettingBalance}
-        >
-          {Object.keys(SUPPORTED_TOKENS)?.map((key) => (
-            <option key={key} value={key}>
-              {key}
-            </option>
-          ))}
-        </select>
-      )}
-      {isConnectingWallet && <p>Connecting...</p>}
-      {wallet && <h2>Address: {wallet}</h2>}
+      <Card style={{ width: 1024 }}>
+        {wallet && <CardHeader title={wallet} />}
+        <Divider />
+        <CardContent>
+          {wallet && !balance && <CircularProgress size={32} />}
 
-      {balance && (
-        <h2>
-          Balance: {balance} {currentToken}
-        </h2>
-      )}
+          {balance && (
+            <Typography variant="h3">
+              {isGettingBalance ? (
+                <CircularProgress size={32} />
+              ) : (
+                <>
+                  {balance} {currentToken}
+                </>
+              )}
+            </Typography>
+          )}
+          {balance && (
+            <Select
+              value={currentToken}
+              onChange={handleSelectToken}
+              size="small"
+              style={{ marginTop: 24 }}
+            >
+              {Object.keys(SUPPORTED_TOKENS)?.map((key) => (
+                <MenuItem key={key} value={key}>
+                  {key}
+                </MenuItem>
+              ))}
+            </Select>
+          )}
+
+          {isConnectingWallet && <CircularProgress />}
+
+          {!wallet && !isConnectingWallet && (
+            <Button onClick={connectWallet}>Connect wallet</Button>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
