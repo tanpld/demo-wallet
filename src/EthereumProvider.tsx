@@ -13,20 +13,23 @@ interface TOKEN {
   address: string;
 }
 
-export const SUPPORTED_TOKENS = [
-  {
+export const SUPPORTED_TOKENS: any = {
+  CRO: {
     name: "CRO",
     address: "",
+    decimals: 18,
   },
-  {
+  USDC: {
     name: "USDC",
     address: "0xc21223249CA28397B4B6541dfFaEcC539BfF0c59",
+    decimals: 6,
   },
-  {
+  CROISSANT: {
     name: "CROISSANT",
     address: "0xa0C3c184493f2Fae7d2f2Bd83F195a1c300FA353",
+    decimals: 18,
   },
-];
+};
 
 const EthereumContext = createContext<{
   wallet: string;
@@ -47,21 +50,26 @@ const EthereumProvider = ({ children }: { children: ReactNode }) => {
     setWallet(accounts[0]);
   };
 
-  const getBalance = async (wallet: string, token?: string) => {
+  const getBalance = async (wallet: string, token: string) => {
+    console.log(token);
     const provider = new ethers.providers.JsonRpcProvider(
-      "https://cronosrpc-2.xstaking.sg"
+      "https://evm.cronos.org"
     );
-    
+
     let tokenContract;
     let value;
-    if (!token) {
+    if (token === "CRO") {
       value = await provider.getBalance(wallet);
     } else {
-      tokenContract = new ethers.Contract(token, abi, provider);
+      tokenContract = new ethers.Contract(
+        SUPPORTED_TOKENS[token]?.address,
+        abi,
+        provider
+      );
       value = await tokenContract.balanceOf(wallet);
     }
 
-    setBalance(ethers.utils.formatEther(value._hex));
+    setBalance(ethers.utils.formatUnits(value._hex, SUPPORTED_TOKENS[token]?.decimals));
   };
 
   useEffect(() => {
@@ -74,7 +82,7 @@ const EthereumProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (wallet) {
-      getBalance(wallet);
+      getBalance(wallet, "CRO");
     }
   }, [wallet]);
 

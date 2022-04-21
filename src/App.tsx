@@ -1,27 +1,32 @@
+import { useState } from "react";
 import "./App.css";
 import { SUPPORTED_TOKENS, useEthereum } from "./EthereumProvider";
 
 function App() {
   const { wallet, balance, connectWallet, getBalance } = useEthereum();
+  const [currentToken, setCurrentToken] = useState("");
+  
+  const handleSelectToken = (e: any) => {
+    getBalance(wallet, e.target.value);
+    setCurrentToken(e.target.value);
+  };
   return (
     <div className="App">
       {!wallet && <button onClick={connectWallet}>Connect wallet</button>}
       {wallet && (
-        <select
-          name="tokens"
-          id="tokens"
-          onChange={(e) => getBalance(wallet, e.target.value)}
-        >
-          {SUPPORTED_TOKENS?.map((token) => (
-            <option key={token.name} value={token.address}>
-              {token.name}
+        <select name="tokens" id="tokens" onChange={handleSelectToken}>
+          {Object.keys(SUPPORTED_TOKENS)?.map((key) => (
+            <option key={key} value={key}>
+              {key}
             </option>
           ))}
         </select>
       )}
 
       <h2>Address: {wallet}</h2>
-      <h2>Balance: {balance}</h2>
+      <h2>
+        Balance: {balance} {currentToken}
+      </h2>
     </div>
   );
 }
