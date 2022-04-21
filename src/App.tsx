@@ -1,13 +1,14 @@
 import { useState } from "react";
 import "./App.css";
-import { SUPPORTED_TOKENS, useEthereum } from "./EthereumProvider";
+import { SUPPORTED_TOKENS } from "./constants";
+import useEthereum from "./useEthereum";
 
 function App() {
   const { wallet, balance, connectWallet, getBalance } = useEthereum();
-  const [currentToken, setCurrentToken] = useState("");
-  
+  const [currentToken, setCurrentToken] = useState("CRO");
+
   const handleSelectToken = (e: any) => {
-    getBalance(wallet, e.target.value);
+    getBalance(wallet, e.target?.value);
     setCurrentToken(e.target.value);
   };
   return (
@@ -22,11 +23,12 @@ function App() {
           ))}
         </select>
       )}
-
-      <h2>Address: {wallet}</h2>
-      <h2>
-        Balance: {balance} {currentToken}
-      </h2>
+      {wallet && <h2>Address: {wallet}</h2>}
+      {balance && (
+        <h2>
+          Balance: {balance} {currentToken}
+        </h2>
+      )}
     </div>
   );
 }
