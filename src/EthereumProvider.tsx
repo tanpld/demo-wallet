@@ -36,7 +36,7 @@ const EthereumProvider = ({ children }: { children: ReactNode }) => {
     if (!wallet) return;
     setIsGettingBalance(true);
     const provider = new ethers.providers.JsonRpcProvider(
-      "https://rpc.artemisone.org/cronos"
+      "https://evm.cronos.org"
     );
 
     let tokenContract;

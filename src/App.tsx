@@ -8,10 +8,13 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import CardHeader from "@mui/material/CardHeader";
 import Divider from "@mui/material/Divider";
+import LinearProgress from "@mui/material/LinearProgress";
+import Skeleton from "@mui/material/Skeleton";
 
 import "./App.css";
 import { SUPPORTED_TOKENS } from "./constants";
 import useEthereum from "./useEthereum";
+import { CardActions } from "@mui/material";
 
 function App() {
   const {
@@ -40,44 +43,61 @@ function App() {
 
   return (
     <div className="App">
-      <Card style={{ width: 1024 }}>
-        {wallet && <CardHeader title={wallet} />}
-        <Divider />
-        <CardContent>
-          {wallet && !balance && <CircularProgress size={32} />}
-
-          {balance && (
-            <Typography variant="h3">
-              {isGettingBalance ? (
-                <CircularProgress size={32} />
-              ) : (
+      <Card sx={{ width: "70vw" }}>
+        {isConnectingWallet && <CircularProgress size={24} />}
+        {wallet && (
+          <>
+            <CardHeader title={wallet} />
+            <Divider sx={{ opacity: wallet ? 1 : 0 }} />
+            <LinearProgress sx={{ opacity: isGettingBalance ? 1 : 0 }} />
+            <CardContent>
+              {wallet && !balance && (
                 <>
-                  {balance} {currentToken}
+                  <Skeleton
+                    variant="rectangular"
+                    width={210}
+                    height={56.02}
+                    sx={{ margin: "0 auto" }}
+                  />
+                  <Skeleton
+                    variant="rectangular"
+                    width={100}
+                    height={40}
+                    sx={{ margin: "0 auto", marginTop: "24px" }}
+                  />
                 </>
               )}
-            </Typography>
-          )}
-          {balance && (
-            <Select
-              value={currentToken}
-              onChange={handleSelectToken}
-              size="small"
-              style={{ marginTop: 24 }}
-            >
-              {Object.keys(SUPPORTED_TOKENS)?.map((key) => (
-                <MenuItem key={key} value={key}>
-                  {key}
-                </MenuItem>
-              ))}
-            </Select>
-          )}
 
-          {isConnectingWallet && <CircularProgress />}
+              {balance && (
+                <Typography variant="h3">
+                  {balance} {currentToken}
+                </Typography>
+              )}
+              {balance && (
+                <Select
+                  value={currentToken}
+                  onChange={handleSelectToken}
+                  size="small"
+                  style={{ marginTop: 24 }}
+                >
+                  {Object.keys(SUPPORTED_TOKENS)?.map((key) => (
+                    <MenuItem key={key} value={key}>
+                      {key}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+            </CardContent>
+          </>
+        )}
 
+        <CardActions>
           {!wallet && !isConnectingWallet && (
-            <Button onClick={connectWallet}>Connect wallet</Button>
+            <Button onClick={connectWallet} sx={{ margin: "0 auto" }}>
+              Connect wallet
+            </Button>
           )}
-        </CardContent>
+        </CardActions>
       </Card>
     </div>
   );
